@@ -1,3 +1,5 @@
+# python3 src/transform.py.
+
 import json
 import os
 import pandas as pd
