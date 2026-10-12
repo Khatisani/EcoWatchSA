@@ -5,6 +5,11 @@ Southern Africa faces increasing vulnerability to severe climate shocks, prolong
 
 **EcoWatch SA** provides a robust, modular ETL (Extract, Transform, Load) data pipeline that automates the ingestion of raw NASA spatial-temporal telemetry, cleans and normalizes variables (like temperature, precipitation, and solar radiation), and stores the structured records into an indexed SQLite data warehouse optimized for high-performance querying and downstream data analysis.
 
+
+<p align="center">
+  <img src="assets/preview.png" alt="Dashboard Preview" width="800"/>
+</p>
+
 ## Project Overview
 **EcoWatch SA** is built as a portfolio demonstration for Earth Observation and space-tech applications.
 
