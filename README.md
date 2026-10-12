@@ -41,7 +41,7 @@ EcoWatchSA/
 └── README.md
 ```
 
-## Getting Started (Phase 1: ETL Pipeline)
+## Execution Guide
 
 1. **Clone the repository and install dependencies:**
    ```bash
