@@ -68,7 +68,7 @@ def main():
         (df["longitude"] == selected_lon) &
         (df["date"].dt.date >= date_range[0]) &
         (df["date"].dt.date <= date_range[1])
-    ]
+    ].copy()
 
     st.title("EcoWatch SA: Regional Environmental Intelligence")
     st.markdown(
@@ -88,6 +88,21 @@ def main():
             col1.metric("Avg Temperature", f"{avg_temp:.2f} °C")
             col2.metric("Total Precipitation", f"{total_precip:.2f} mm")
             col3.metric("Avg Solar Radiation", f"{avg_solar:.2f} MJ/m²")
+
+            st.markdown("---")
+            
+            st.subheader("Trends")
+            
+            filtered_df["temp_rolling"] = filtered_df["temperature_2m"].rolling(window=30).mean()
+            
+            chart_data_temp = filtered_df.set_index("date")[["temperature_2m", "temp_rolling"]]
+            st.markdown("**Temperature Trend (°C) with 30-Day Moving Average**")
+            st.line_chart(chart_data_temp)
+            
+            chart_data_precip = filtered_df.set_index("date")["precipitation"]
+            st.markdown("**Daily Precipitation Distribution (mm)**")
+            st.bar_chart(chart_data_precip)
+
         else:
             st.warning("No data available for the selected filters.")
             
@@ -98,6 +113,14 @@ def main():
         st.subheader("Raw Data Inspector")
         st.write(f"Filtered dataset preview ({len(filtered_df)} matching rows):")
         st.dataframe(filtered_df, use_container_width=True)
+
+        csv_data = filtered_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download Data as CSV",
+            data=csv_data,
+            file_name="ecowatch_filtered_export.csv",
+            mime="text/csv",
+        )
 
 if __name__ == "__main__":
     main()
