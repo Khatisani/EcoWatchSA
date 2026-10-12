@@ -9,6 +9,76 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Styling
+st.markdown("""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap');
+
+        .stApp {
+            background-color: #fde8ed;
+        }
+        
+        section[data-testid="stSidebar"] {
+            background-color: #f7d1db;
+            border-right: 3px solid #5c1d33;
+        }
+        
+        .main h1, .main h2, .main h3, .main h4, .main h5, .main h6, 
+        .main p, .main span, .main label,
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] h1, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] h2, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] h3, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] h4, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] p, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] span, 
+        section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] label {
+            font-family: 'Quicksand', sans-serif !important;
+            color: #5c1d33 !important;
+        }
+        
+        h1 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        div[data-testid="stMetric"] {
+            background-color: #ffffff !important;
+            border: 3px solid #5c1d33 !important;
+            border-radius: 16px !important;
+            box-shadow: 4px 4px 0px #5c1d33 !important;
+            padding: 15px;
+        }
+
+        div.stAlert {
+            background-color: #f7d1db !important;
+            border: 3px solid #5c1d33 !important;
+            border-radius: 16px !important;
+            box-shadow: 4px 4px 0px #5c1d33 !important;
+        }
+
+        div[data-baseweb="select"] > div, div.stDateInput input {
+            background-color: #ffffff !important;
+            border: 2px solid #5c1d33 !important;
+            border-radius: 12px !important;
+        }
+
+        .stButton>button {
+            background-color: #f596aa !important;
+            color: #5c1d33 !important;
+            border: 3px solid #5c1d33 !important;
+            border-radius: 12px !important;
+            box-shadow: 3px 3px 0px #5c1d33 !important;
+            font-weight: 700 !important;
+        }
+        
+        .stButton>button:hover {
+            background-color: #f28095 !important;
+            transform: translateY(-2px);
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+
 @st.cache_data
 def load_environmental_data(db_path: str = "data/processed/ecowatch.db") -> pd.DataFrame:
     """
