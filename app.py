@@ -23,6 +23,13 @@ def load_environmental_data(db_path: str = "data/processed/ecowatch.db") -> pd.D
     return df
 
 def main():
+    try:
+        df = load_environmental_data()
+    except Exception as e:
+        st.error(f"Database connection error: {e}. Please ensure Phase 1 load script has been run.")
+        return
+
+    
     # Sidebar
     st.sidebar.title("🌍 EcoWatch SA")
     st.sidebar.markdown("---")
@@ -31,7 +38,37 @@ def main():
     navigation = st.sidebar.radio("Go to:", ["Overview & Trends", "Raw Data Inspector"])
     
     st.sidebar.markdown("---")
+
+    st.sidebar.subheader("Spatial & Temporal Filters")
+    unique_coords = df[['latitude', 'longitude']].drop_duplicates().apply(
+        lambda row: f"Lat: {row['latitude']}, Lon: {row['longitude']}", axis=1
+    ).tolist()
+    
+    selected_coord_str = st.sidebar.selectbox("Select Target Grid Point:", unique_coords)
+    
+    min_date = df["date"].min().date()
+    max_date = df["date"].max().date()
+    
+    date_range = st.sidebar.date_input(
+        "Filter Date Range:",
+        value=(min_date, max_date),
+        min_value=min_date,
+        max_value=max_date
+    )
+    
+    st.sidebar.markdown("---")
     st.sidebar.info("EcoWatch SA v1.0 • Built for regional climate tracking & environmental monitoring.")
+
+
+    selected_lat = float(selected_coord_str.split(",")[0].replace("Lat: ", ""))
+    selected_lon = float(selected_coord_str.split(",")[1].replace(" Lon: ", ""))
+    
+    filtered_df = df[
+        (df["latitude"] == selected_lat) & 
+        (df["longitude"] == selected_lon) &
+        (df["date"].dt.date >= date_range[0]) &
+        (df["date"].dt.date <= date_range[1])
+    ]
 
     st.title("EcoWatch SA: Regional Environmental Intelligence")
     st.markdown(
@@ -40,20 +77,27 @@ def main():
     )
     st.markdown("---")
 
-    try:
-        df = load_environmental_data()
-    except Exception as e:
-        st.error(f"Database connection error: {e}. Please ensure Phase 1 load script has been run.")
-        return
-
     if navigation == "Overview & Trends":
         st.subheader("Regional Climate Trends")
-        st.write(f"Successfully loaded **{len(df)}** historical records from the SQLite data warehouse.")
-        
+        if not filtered_df.empty:
+            avg_temp = filtered_df["temperature_2m"].mean()
+            total_precip = filtered_df["precipitation"].sum()
+            avg_solar = filtered_df["solar_radiation"].mean()
+            
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Avg Temperature", f"{avg_temp:.2f} °C")
+            col2.metric("Total Precipitation", f"{total_precip:.2f} mm")
+            col3.metric("Avg Solar Radiation", f"{avg_solar:.2f} MJ/m²")
+        else:
+            st.warning("No data available for the selected filters.")
+            
+        st.markdown("---")
+        st.write(f"Displaying analytics for coordinate grid **({selected_lat}, {selected_lon})** across **{len(filtered_df)}** records.")
+
     elif navigation == "Raw Data Inspector":
         st.subheader("Raw Data Inspector")
-        st.write(f"Dataset preview ({len(df)} total rows loaded into memory cache):")
-        st.dataframe(df.head(10), use_container_width=True)
+        st.write(f"Filtered dataset preview ({len(filtered_df)} matching rows):")
+        st.dataframe(filtered_df, use_container_width=True)
 
 if __name__ == "__main__":
     main()
